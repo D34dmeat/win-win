@@ -1,11 +1,11 @@
-name: winwin-master
+name: win-win Build
 
 on: [push]
 
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v1
