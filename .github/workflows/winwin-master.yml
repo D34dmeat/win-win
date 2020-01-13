@@ -14,4 +14,4 @@ jobs:
     - name: Run tests
       run: cargo test --verbose
     - name: Run examples
-      run: cargo run --examples simple_window
+      run: cargo run --example simple_window
