@@ -3,8 +3,19 @@ name = "win-win"
 version = "0.0.1"
 authors = ["mikael edlund <d34dmeat@gmail.com>"]
 edition = "2018"
+description = ""
+repository = "https://github.com/d34dmeat/win-win"
+readme = "README.md"
+keywords = ["gui", "win", "winapi"]
+license = "MIT OR Apache-2.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 winapi = "0.3.8"
+
+[badges]
+github = { repository = "d34dmeat/workflows/winwin-master"}
+# appveyor = { repository = "d34dmeat/win-win" }
+# travis-ci = { repository = "d34dmeat/win-win" }
+# codecov = { repository = "d34dmeat/win-win" }
