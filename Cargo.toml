@@ -12,7 +12,9 @@ license = "MIT OR Apache-2.0"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-winapi = "0.3.8"
+winapi ={version = "0.3.8", features=["winuser","commdlg", "commctrl", "shellapi", "shobjidl", "combaseapi", "windowsx", "winerror", "winbase", "wincon"]}
+libc = "0.2.66"
+wio = "0.2.2"
 
 [badges]
 github = { repository = "d34dmeat/workflows/winwin-master"}

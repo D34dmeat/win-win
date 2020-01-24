@@ -1,6 +1,26 @@
 extern crate win_win;
-use win_win::*;
 
-fn main() {
-    
+use win_win::{WinApp, controls::Button, controls::Control};
+
+fn main(){
+use win_win::WinBuilder;
+let mut app = WinApp::init();
+let app = app
+.position(100, 100)
+.height(600)
+.width(400)
+.label("hello");
+
+//Button::create();
+let mut menu = app.create_menu();
+let mut filemenu = menu.add_dropdown("File");
+let open = filemenu.add_menuitem(app, "Open");
+let options_menu = filemenu.add_dropdown("Options");
+let refresh = options_menu.add_menuitem(app, "Refresh");
+filemenu.add_separator();
+let exit = filemenu.add_menuitem(app, "Exit");
+
+WinApp::run(app);
+
+
 }

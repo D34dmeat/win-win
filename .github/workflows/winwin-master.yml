@@ -1,4 +1,4 @@
-name: Win-Win/master build
+name: win-win Examples
 
 on: [push]
 
