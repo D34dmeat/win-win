@@ -84,9 +84,9 @@ impl WinAppBuilder{
     /// 
     /// let open = filemenu.add_menuitem(app, "Open");
     /// 
-    /// let helpme = helpmenu.add_menuitem("Help me");
+    /// let helpme = helpmenu.add_menuitem(app,"Help me");
     /// helpmenu.add_separator();
-    /// let about = helpmenu.add_menuitem("About");
+    /// let about = helpmenu.add_menuitem(app,"About");
     /// WinApp::run(app);
     /// ```
     pub fn create_menu(&mut self)->crate::menu::Menu{  //HMENU
