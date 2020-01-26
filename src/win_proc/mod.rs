@@ -1,3 +1,4 @@
+use crate::window::winbuilder::windowstate;
 use std::cell::Cell;
 use crate::id_store::Id;
 use std::collections::BTreeMap;
@@ -160,13 +161,22 @@ static mut cur_mouse_pos:POINT = POINT{x:0,y:0};
 static mut images: Option<[i32; 8]> = Some([0i32; 8]);
 static mut cur_selected_tvitem: HTREEITEM= 0 as HTREEITEM;
 static mut cur_contexth: HWND= 0 as HWND;
-mod callbacks;
+pub mod callbacks;
 use callbacks::*;
+
 
 pub struct WinProc{
     
     pub callbacks: BTreeMap<Id, cllbck>
 }
+/* impl ToOwned for WinProc{
+    type Owned=WinProc;
+    fn to_owned(&self)->Self::Owned{
+        use std::iter::FromIterator;
+       WinProc{callbacks:BTreeMap::from_iter(self.callbacks.iter())} 
+    }
+} */
+
 impl WinProc{
     pub fn new()->Self{
         WinProc{
@@ -190,6 +200,7 @@ impl WinProc{
     
     if self.callbacks.contains_key(&666u32){
         winapi::um::winuser::PostQuitMessage(0);
+        SendMessageW(h_wnd, WM_CLOSE, 0, 0);
     }
     if !self.callbacks.is_empty(){
         for (id, callback) in &mut self.callbacks{
@@ -247,6 +258,12 @@ pub unsafe extern "system" fn window_proc(
     } */
     //IsDialogMessageW();
     if msg == WM_CREATE {
+        if let Some(state) = &mut windowstate{
+            if state.get_proc().callbacks.contains_key(&666u32){
+                SendMessageW(h_wnd, WM_CLOSE, 0, 0);
+                //winapi::um::winuser::PostQuitMessage(0);
+            }
+        }
         /*  */
     };
     if msg == WM_SIZE {
@@ -254,7 +271,19 @@ pub unsafe extern "system" fn window_proc(
 
         //pos_adjust(h_wnd);
     }
-     
+    if let Some(state) = &mut windowstate{
+        /* if state.get_proc().callbacks.contains_key(&666u32){
+            //SendMessageW(h_wnd, WM_CLOSE, 0, 0);
+            winapi::um::winuser::PostQuitMessage(0);
+        } */
+        if !state.get_proc().callbacks.is_empty(){
+            for (id, callback) in &mut state.get_proc().callbacks{
+                callback(*id);
+            }
+        }
+
+    }
+    
     
      if LOWORD(w_param as DWORD) == 255{
         println!("w_param loword nr {}  msg nr {}",&w_param, &msg);

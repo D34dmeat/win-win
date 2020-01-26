@@ -1,3 +1,4 @@
+use crate::win_proc::callbacks::cllbck;
 use crate::id_store::Id;
 use std::cell::Cell;
 use winapi::shared::minwindef::DWORD;
@@ -96,18 +97,18 @@ impl WinAppBuilder{
     /// let helpme = helpmenu.add_menuitem(app,"Help me");
     /// helpmenu.add_separator(); 
     /// let about = helpmenu.add_menuitem(app,"About");
-    /// # app.main_window.wnd_proc.add_callback(666u32, |666u32| let x = 5;)
+    /// # app.add_callback(666u32, |v| {let x = v;});
     /// 
     /// WinApp::run(app);
     /// 
-    /// //# unsafe{winapi::um::winuser::PostQuitMessage(0);}
+    /// 
     /// ```
     pub fn create_menu(&mut self)->crate::menu::Menu{  //HMENU
         let menu = crate::menu::Menu::new();
         self.main_window.menu = menu.data();
         menu
     }
-
+//# unsafe{winapi::um::winuser::PostQuitMessage(0);}
     pub fn new_id(&mut self)->Id{
         self.main_window.id_store.get_mut().next()
     }
@@ -117,8 +118,11 @@ impl WinAppBuilder{
     }
     pub fn finish(&mut self)->HWND{
         //let classname = self.main_window.class.register();
-        //self.main_window.class.set_proc(self.main_window.wnd_proc.wndproc);
+        //self.main_window.class.set_proc(self.main_window.wnd_proc.wndproc);                 TODO fix this!!!!!!
+        
         unsafe{
+           // windowstate = Some(WindowState{wndproc:&self.main_window.wnd_proc});
+           
         self.main_window.hwnd = winapi::um::winuser::CreateWindowExW(
             self.main_window.exstyle.0,
             self.main_window.class.register().as_ptr(),
@@ -134,6 +138,13 @@ impl WinAppBuilder{
             std::ptr::null_mut(),
         );
         self.main_window.hwnd}
+    }
+    pub fn add_callback(&self,id: Id, callback: fn(Id)){
+        unsafe{
+            if let Some(state) = &mut windowstate{
+                state.wndproc.add_callback(id,Box::new(callback));
+        }
+    }
     }
 }
 
@@ -151,6 +162,7 @@ trait WindowTrait{
     fn create_window(){
         
     }
+    
 }
 struct Style(DWORD);
 impl Style{
@@ -184,7 +196,7 @@ pub struct Window{
 
 impl Default for Window{
     fn default()->Self{
-         
+        unsafe{windowstate = Some(WindowState{wndproc:WinProc::new()});}
         Window{
             hwnd: 0 as HWND,
             id_store: Cell::new(IdStore::new()),
@@ -201,7 +213,15 @@ impl Default for Window{
     }
     
 }
-struct Ac{}
+pub struct WindowState{
+   wndproc: WinProc
+}
+impl WindowState{
+    pub fn get_proc(&mut self)->&mut self::WinProc{
+        &mut self.wndproc
+    }
+}
+pub static mut windowstate:Option<WindowState> = None;
 
 /* impl WinAppBuilder{
     /// Sets the width of the window
