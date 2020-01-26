@@ -12,7 +12,7 @@
 //!    .height(600)
 //!    .width(400)
 //!    .label("hello");
-//! # app.add_callback(666u32, |v| {let x = v;});
+//! # app.add_callback(666u32, |v,_ac| {let x = v;});
 //!    WinApp::run(app);
 //!    
 //!    

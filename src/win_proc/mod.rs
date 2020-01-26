@@ -204,7 +204,7 @@ impl WinProc{
     }
     if !self.callbacks.is_empty(){
         for (id, callback) in &mut self.callbacks{
-            callback(*id);
+            callback(*id,Act::new(h_wnd, msg, w_param, l_param));
         }
     }
     //IsDialogMessageW();
@@ -237,7 +237,23 @@ impl WinProc{
 }
 
 
-
+pub struct Act{
+    hwnd:HWND,
+    msg: UINT,
+    wparam: WPARAM,
+    lparam: LPARAM
+}
+impl Act{
+    fn new(hwnd: HWND,
+        msg: UINT,
+        wparam: WPARAM,
+        lparam: LPARAM)->Self{
+            Act{hwnd,msg,wparam,lparam}
+    }
+    pub fn close_window(&self){
+        unsafe{SendMessageW(self.hwnd, WM_CLOSE, 0, 0);}
+    }
+}
 
 
 pub unsafe extern "system" fn window_proc(
@@ -278,7 +294,7 @@ pub unsafe extern "system" fn window_proc(
         } */
         if !state.get_proc().callbacks.is_empty(){
             for (id, callback) in &mut state.get_proc().callbacks{
-                callback(*id);
+                callback(*id,Act::new(h_wnd, msg, w_param, l_param));
             }
         }
 

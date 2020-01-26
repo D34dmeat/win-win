@@ -21,7 +21,7 @@ filemenu.add_separator();
 let exit = filemenu.add_menuitem(app, "Exit");
 
 //this is just a callback to close the window while testing, remove this for a functioning example
-app.add_callback(666u32, |v| {let x = v;});
+app.add_callback(666, |v,ac| {});
 
 WinApp::run(app);
 

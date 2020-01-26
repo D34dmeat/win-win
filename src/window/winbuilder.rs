@@ -1,3 +1,4 @@
+use crate::win_proc::Act;
 use crate::win_proc::callbacks::cllbck;
 use crate::id_store::Id;
 use std::cell::Cell;
@@ -97,7 +98,7 @@ impl WinAppBuilder{
     /// let helpme = helpmenu.add_menuitem(app,"Help me");
     /// helpmenu.add_separator(); 
     /// let about = helpmenu.add_menuitem(app,"About");
-    /// # app.add_callback(666u32, |v| {let x = v;});
+    /// # app.add_callback(666u32, |v,_ac| {let x = v;});
     /// 
     /// WinApp::run(app);
     /// 
@@ -139,7 +140,7 @@ impl WinAppBuilder{
         );
         self.main_window.hwnd}
     }
-    pub fn add_callback(&self,id: Id, callback: fn(Id)){
+    pub fn add_callback(&self,id: Id, callback: fn(Id,Act)){
         unsafe{
             if let Some(state) = &mut windowstate{
                 state.wndproc.add_callback(id,Box::new(callback));
