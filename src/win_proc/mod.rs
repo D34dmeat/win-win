@@ -1,3 +1,6 @@
+use std::cell::Cell;
+use crate::id_store::Id;
+use std::collections::BTreeMap;
 use winapi::um::winuser::GetDlgCtrlID;
 use winapi::um::winuser::MF_SEPARATOR;
 use crate::window::controls::delete_treeview_item;
@@ -157,6 +160,72 @@ static mut cur_mouse_pos:POINT = POINT{x:0,y:0};
 static mut images: Option<[i32; 8]> = Some([0i32; 8]);
 static mut cur_selected_tvitem: HTREEITEM= 0 as HTREEITEM;
 static mut cur_contexth: HWND= 0 as HWND;
+mod callbacks;
+use callbacks::*;
+
+pub struct WinProc{
+    
+    pub callbacks: BTreeMap<Id, cllbck>
+}
+impl WinProc{
+    pub fn new()->Self{
+        WinProc{
+            callbacks: BTreeMap::new(),
+           
+        }
+    }
+    pub fn add_callback(&mut self, id: Id, callback: cllbck)->Option<cllbck>{
+        self.callbacks.insert(id, callback)
+    }
+    pub unsafe extern "system" fn wndproc(&mut self,h_wnd: HWND,
+        msg: UINT,
+        w_param: WPARAM,
+        l_param: LPARAM,
+    ) -> LRESULT {
+        
+    if msg == WM_DESTROY {
+        winapi::um::winuser::PostQuitMessage(0);
+    };
+    
+    
+    if self.callbacks.contains_key(&666u32){
+        winapi::um::winuser::PostQuitMessage(0);
+    }
+    if !self.callbacks.is_empty(){
+        for (id, callback) in &mut self.callbacks{
+            callback(*id);
+        }
+    }
+    //IsDialogMessageW();
+    if msg == WM_CREATE {
+        /*  */
+    };
+    if msg == WM_SIZE {
+        //SendDlgItemMessageW(h_wnd, 2004, PBM_STEPIT, 0,0);
+
+        //pos_adjust(h_wnd);
+    }
+    
+    if msg == WM_QUIT {
+        DestroyWindow(h_wnd);
+    };
+    return DefWindowProcW(h_wnd, msg, w_param, l_param);
+
+
+    }
+ /* pub fn get(&mut self)->Option<unsafe extern "system" fn(
+    *mut winapi::shared::windef::HWND__,
+    u32,
+    usize,
+    isize,
+) -> isize>{
+    let wp = std::ptr::NonNull::new(*self.wndproc);
+    return Some(unsafe extern "system" *self.wndproc)
+
+} */
+}
+
+
 
 
 
@@ -633,4 +702,3 @@ pub fn menuitem_enable(hwnd: HWND, itemid: usize, flag: UINT) {
         EnableMenuItem(menu, itemid as UINT, flag); //flag
     }
 }
-

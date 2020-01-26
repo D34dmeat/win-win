@@ -76,7 +76,16 @@ impl WinAppBuilder{
     /// Sets the main menu of the window and returns a menu to build on before showing the window
     /// # Example
     /// ```
+    /// 
+    /// use win_win::{WinApp, menu::*, WinBuilder};
+    /// 
     /// let mut app = WinApp::init();
+    /// let app = app
+    ///.position(100, 200)
+    ///.height(200)
+    ///.width(400)
+    ///.label("menu test");
+    /// 
     /// let mut menu = app.create_menu();
     /// 
     /// let mut filemenu = menu.add_dropdown("File");
@@ -85,9 +94,13 @@ impl WinAppBuilder{
     /// let open = filemenu.add_menuitem(app, "Open");
     /// 
     /// let helpme = helpmenu.add_menuitem(app,"Help me");
-    /// helpmenu.add_separator();
+    /// helpmenu.add_separator(); 
     /// let about = helpmenu.add_menuitem(app,"About");
+    /// # app.main_window.wnd_proc.add_callback(666u32, |666u32| let x = 5;)
+    /// 
     /// WinApp::run(app);
+    /// 
+    /// //# unsafe{winapi::um::winuser::PostQuitMessage(0);}
     /// ```
     pub fn create_menu(&mut self)->crate::menu::Menu{  //HMENU
         let menu = crate::menu::Menu::new();
@@ -104,8 +117,9 @@ impl WinAppBuilder{
     }
     pub fn finish(&mut self)->HWND{
         //let classname = self.main_window.class.register();
+        //self.main_window.class.set_proc(self.main_window.wnd_proc.wndproc);
         unsafe{
-        winapi::um::winuser::CreateWindowExW(
+        self.main_window.hwnd = winapi::um::winuser::CreateWindowExW(
             self.main_window.exstyle.0,
             self.main_window.class.register().as_ptr(),
             self.main_window.label.as_ptr(),
@@ -118,7 +132,8 @@ impl WinAppBuilder{
             self.main_window.menu,
             0 as HINSTANCE,
             std::ptr::null_mut(),
-        )}
+        );
+        self.main_window.hwnd}
     }
 }
 
@@ -158,13 +173,13 @@ pub struct Window{
     height: i32,
     id_store: Cell<IdStore>,
     class: class::Wclass,
-    wnd_proc: unsafe extern "system" fn(
+    wnd_proc: WinProc
+/* unsafe extern "system" fn(
         *mut winapi::shared::windef::HWND__,
         u32,
         usize,
         isize,
-    ) -> isize
-
+    ) -> isize */
 }
 
 impl Default for Window{
@@ -181,11 +196,12 @@ impl Default for Window{
             pos : Point::new(0, 0),
             label: to_wstring("Win-Win Application"),
             class: class::build_wnd_class("Main_Application", window_proc),
-            wnd_proc: window_proc
+            wnd_proc: WinProc::new()
         }
     }
     
 }
+struct Ac{}
 
 /* impl WinAppBuilder{
     /// Sets the width of the window

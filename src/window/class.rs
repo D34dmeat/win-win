@@ -69,6 +69,10 @@ impl Wclass{
     pub fn with_menu_name(&mut self, name: &str){
         self.1.lpszMenuName = to_wstring(name).as_ptr()
     }
+    pub fn set_proc(&mut self, pr: unsafe extern "system" fn(*mut winapi::shared::windef::HWND__, u32, usize, isize) -> isize){
+        self.1.lpfnWndProc = Some(pr);
+    }
+    
 }
 pub fn build_wnd_class(class_name: &'static str,
 window_proc: unsafe extern "system" fn(
