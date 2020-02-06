@@ -7,7 +7,7 @@ pub trait Callback<T> where T: FnMut()->bool{
     fn run(&mut self)->bool;
 }
 
-pub type cllbck = Box<dyn Fn(Id,Act)->()>;
+pub type cllbck = Box<dyn Fn(Id,&Act)->()>;
 pub struct Respond{}
 /* impl<T> Callback<T= dyn FnMut> for Respond{
 

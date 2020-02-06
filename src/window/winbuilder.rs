@@ -1,4 +1,4 @@
-use crate::win_proc::Act;
+//use crate::win_proc::Act;
 use crate::win_proc::callbacks::cllbck;
 use crate::id_store::Id;
 use std::cell::Cell;
@@ -140,7 +140,7 @@ impl WinAppBuilder{
         );
         self.main_window.hwnd}
     }
-    pub fn add_callback(&self,id: Id, callback: fn(Id,Act)){
+    pub fn add_callback(&self,id: Id, callback: fn(Id,&Act)){
         unsafe{
             if let Some(state) = &mut windowstate{
                 state.wndproc.add_callback(id,Box::new(callback));

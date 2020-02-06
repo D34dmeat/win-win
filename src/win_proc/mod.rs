@@ -1,3 +1,5 @@
+use winapi::um::winuser::PostMessageW;
+use std::rc::Rc;
 use crate::window::winbuilder::windowstate;
 use std::cell::Cell;
 use crate::id_store::Id;
@@ -204,7 +206,7 @@ impl WinProc{
     }
     if !self.callbacks.is_empty(){
         for (id, callback) in &mut self.callbacks{
-            callback(*id,Act::new(h_wnd, msg, w_param, l_param));
+            //callback(id.clone(),Act::new(&h_wnd, &msg, &w_param, &l_param));
         }
     }
     //IsDialogMessageW();
@@ -237,21 +239,46 @@ impl WinProc{
 }
 
 
-pub struct Act{
-    hwnd:HWND,
-    msg: UINT,
-    wparam: WPARAM,
-    lparam: LPARAM
+/* pub struct Act<'a>{
+    hwnd: &'a HWND,
+    msg: &'a UINT,
+    wparam: &'a WPARAM,
+    lparam: &'a LPARAM
 }
-impl Act{
-    fn new(hwnd: HWND,
-        msg: UINT,
-        wparam: WPARAM,
-        lparam: LPARAM)->Self{
-            Act{hwnd,msg,wparam,lparam}
+impl<'a> Act<'a>{
+    fn new(hwnd: &'a HWND,
+        msg: &'a UINT,
+        wparam: &'a WPARAM,
+        lparam: &'a LPARAM)->Self{
+            Act{hwnd: hwnd,msg,wparam,lparam}
     }
     pub fn close_window(&self){
-        unsafe{SendMessageW(self.hwnd, WM_CLOSE, 0, 0);}
+        unsafe{
+            SendMessageW(*self.hwnd, WM_CLOSE, 0, 0);
+        }
+    }
+} */
+
+pub struct Act{
+    hwnd : Cell<HWND>,
+    msg: Cell<UINT>,
+    wparam: Cell<WPARAM>,
+    lparam: Cell<LPARAM>,
+}
+impl<'a> Act{
+    fn new(hwnd: HWND, msg: UINT, wparam: WPARAM, lparam: LPARAM)->Self{
+            Act{
+                hwnd:Cell::new(hwnd),
+                msg:Cell::new(msg),
+                wparam:Cell::new(wparam),
+                lparam:Cell::new(lparam),
+            }
+    }
+    pub fn close_window(&self){
+        unsafe{
+            //SendMessageW(self.hwnd, WM_CLOSE, 0, 0);
+            PostMessageW(self.hwnd.get(),WM_CLOSE,0,0);
+        }
     }
 }
 
@@ -262,6 +289,9 @@ pub unsafe extern "system" fn window_proc(
     w_param: WPARAM,
     l_param: LPARAM,
 ) -> LRESULT {
+
+ let act = Act::new(h_wnd,msg,w_param,l_param);
+
     if msg == WM_DESTROY {
         winapi::um::winuser::PostQuitMessage(0);
     };
@@ -294,7 +324,7 @@ pub unsafe extern "system" fn window_proc(
         } */
         if !state.get_proc().callbacks.is_empty(){
             for (id, callback) in &mut state.get_proc().callbacks{
-                callback(*id,Act::new(h_wnd, msg, w_param, l_param));
+                callback(id.clone(),&act);
             }
         }
 
