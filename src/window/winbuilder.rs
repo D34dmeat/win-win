@@ -1,5 +1,5 @@
 //use crate::win_proc::Act;
-use crate::win_proc::callbacks::cllbck;
+use crate::win_proc::callbacks::Cllbck;
 use crate::id_store::Id;
 use std::cell::Cell;
 use winapi::shared::minwindef::DWORD;
@@ -82,7 +82,7 @@ impl WinAppBuilder{
     /// use win_win::{WinApp, menu::*, WinBuilder};
     /// 
     /// let mut app = WinApp::init();
-    /// let app = app
+    /// let mut app = app
     ///.position(100, 200)
     ///.height(200)
     ///.width(400)
@@ -94,6 +94,8 @@ impl WinAppBuilder{
     /// let mut helpmenu = menu.add_dropdown("Help");
     /// 
     /// let open = filemenu.add_menuitem(app, "Open");
+    /// let exit = filemenu.add_menuitem(app, "Exit");
+    /// exit.add_callback(&mut app, |ac| {ac.close_window();});
     /// 
     /// let helpme = helpmenu.add_menuitem(app,"Help me");
     /// helpmenu.add_separator(); 
@@ -117,6 +119,9 @@ impl WinAppBuilder{
     pub fn hwnd(&self)->HWND{
         self.main_window.hwnd
     }
+    pub fn add_control(&mut self,cntrl:Box<dyn Control>){
+        self.main_window.controls.push(cntrl)
+    }
     pub fn finish(&mut self)->HWND{
         //let classname = self.main_window.class.register();
         //self.main_window.class.set_proc(self.main_window.wnd_proc.wndproc);                 TODO fix this!!!!!!
@@ -138,6 +143,9 @@ impl WinAppBuilder{
             0 as HINSTANCE,
             std::ptr::null_mut(),
         );
+        for control in &self.main_window.controls{
+            control.place(self.main_window.hwnd);
+        }
         self.main_window.hwnd}
     }
     pub fn add_callback(&self,id: Id, callback: fn(&Act)){
@@ -193,7 +201,8 @@ pub struct Window{
     height: i32,
     id_store: Cell<IdStore>,
     class: class::Wclass,
-    wnd_proc: WinProc
+    wnd_proc: WinProc,
+    controls: Vec<Box<dyn Control>>
 /* unsafe extern "system" fn(
         *mut winapi::shared::windef::HWND__,
         u32,
@@ -216,7 +225,8 @@ impl Default for Window{
             pos : Point::new(0, 0),
             label: to_wstring("Win-Win Application"),
             class: class::build_wnd_class("Main_Application", window_proc),
-            wnd_proc: WinProc::new()
+            wnd_proc: WinProc::new(),
+            controls: Vec::new(),
         }
     }
     

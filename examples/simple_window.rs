@@ -5,7 +5,7 @@ use win_win::{WinApp, controls::Button, controls::Control};
 fn main(){
 use win_win::WinBuilder;
 let mut app = WinApp::init();
-let app = app
+let mut app = app
 .position(100, 100)
 .height(600)
 .width(400)
@@ -21,9 +21,12 @@ filemenu.add_separator();
 let exit = filemenu.add_menuitem(app, "Exit");
 
 //this is just a callback to close the window while testing, remove this for a functioning example
-app.add_main_handler(|ac| {ac.close_window();});
+//app.add_main_handler(|ac| {ac.close_window();});
+let bbutton = app.add_button("quit",(60,40).into(),60,40);
 
-app.add_callback(exit, |ac| {ac.close_window();});
+exit.add_callback(&mut app, |ac| {ac.close_window();});
+bbutton.add_callback(&mut app, |ac| {ac.close_window();});
+//app.add_callback(exit.get_id(), |ac| {ac.close_window();});
 
 WinApp::run(app);
 

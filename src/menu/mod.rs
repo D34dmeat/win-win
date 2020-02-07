@@ -1,3 +1,5 @@
+use crate::win_proc::Act;
+use crate::controls::Control;
 use winapi::um::winuser::DestroyMenu;
 use winapi::um::winuser::TrackPopupMenu;
 use winapi::shared::windef::POINT;
@@ -27,6 +29,17 @@ use winapi::um::winuser::{
 pub struct Menu{
     data: MenuData
 }
+pub struct MenuItem{
+    id: Id
+}
+impl Control for MenuItem{
+    fn id(&self)->Id{
+        self.id
+    }
+    fn place(&self, win: HWND){
+        //self.create(win, &self.label, self.id as i32, self.point, self.width, self.height);
+    }
+}
 impl Menu{
     pub fn new()->Self{
         Menu{
@@ -43,12 +56,12 @@ impl Menu{
     pub(crate) fn data(&self)->HMENU{
         self.data.0
     }
-    pub fn add_menuitem(&self, app: &mut WinAppBuilder, title:&str)->Id{
+    pub fn add_menuitem(&self, app: &mut WinAppBuilder, title:&str)->MenuItem{//Id
         let id = app.new_id();
         unsafe{AppendMenuW(self.data(), MF_STRING, id as usize, to_wstring(title).as_ptr());}
-        id
+        MenuItem{id:id}
     }
-    pub fn add_checkmenuitem(&self, app: &mut WinAppBuilder, title:&str, checked: bool)->Id{
+    pub fn add_checkmenuitem(&self, app: &mut WinAppBuilder, title:&str, checked: bool)->MenuItem{
         let id = app.new_id();
         unsafe{AppendMenuW(self.data(), MF_STRING, id as usize, to_wstring(title).as_ptr());
             if checked {
@@ -57,7 +70,7 @@ impl Menu{
                 CheckMenuItem(self.data(), id, MF_UNCHECKED);
             }
         }
-        id
+        MenuItem{id:id}
     }
     pub fn add_separator(&self){
         unsafe{AppendMenuW(self.data(), MF_SEPARATOR, 0 as usize, 0 as LPCWSTR);}
@@ -74,29 +87,29 @@ impl Menu{
        menu
     }
 
-    pub fn set_menuitem_checkstate(&self, item: Id, checked: bool){
+    pub fn set_menuitem_checkstate(&self, item: &MenuItem, checked: bool){
         unsafe{if checked {
-            CheckMenuItem(self.data(), item, MF_CHECKED);
+            CheckMenuItem(self.data(), item.id, MF_CHECKED);
         } else {
-            CheckMenuItem(self.data(), item, MF_UNCHECKED);
+            CheckMenuItem(self.data(), item.id, MF_UNCHECKED);
         }}
     }
 
-    pub fn get_menuitem_checkstate(&self, item: Id)->bool{
+    pub fn get_menuitem_checkstate(&self, item: &MenuItem)->bool{
         unsafe{
-            let mstate = GetMenuState(self.data(), item, MF_BYCOMMAND);
+            let mstate = GetMenuState(self.data(), item.id, MF_BYCOMMAND);
                 if mstate == MF_CHECKED{true}else{false}
             }
     }
 
-    pub fn enable_menuitem(&self, item: Id){
+    pub fn enable_menuitem(&self, item: &MenuItem){
         unsafe{
-            EnableMenuItem(self.data(), item, MF_BYCOMMAND | MF_ENABLED);
+            EnableMenuItem(self.data(), item.id, MF_BYCOMMAND | MF_ENABLED);
             }
     }
-    pub fn disable_menuitem(&self, item: Id){
+    pub fn disable_menuitem(&self, item: &MenuItem){
         unsafe{
-            EnableMenuItem(self.data(), item, MF_BYCOMMAND | MF_DISABLED);
+            EnableMenuItem(self.data(), item.id, MF_BYCOMMAND | MF_DISABLED);
             }
     }
 }

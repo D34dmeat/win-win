@@ -1,3 +1,8 @@
+use crate::window::winbuilder::Window;
+use crate::win_proc::Act;
+use crate::id_store::Id;
+use crate::window::winbuilder::WinAppBuilder;
+use crate::win_proc::callbacks::Cllbck;
 use winapi::shared::ntdef::LPWSTR;
 use winapi::um::commctrl::TVS_INFOTIP;
 use winapi::um::winuser::{CBS_SIMPLE,CB_SHOWDROPDOWN,CBS_DROPDOWNLIST,CBS_HASSTRINGS,CB_SETCURSEL};
@@ -136,11 +141,20 @@ static mut hPrevRootItem: HTREEITEM = 0 as HTREEITEM;
 static mut hPrevLev2Item: HTREEITEM = 0 as HTREEITEM;
 
 mod buttons;
-pub use buttons::Button;
+pub use buttons::*;
+
+pub enum ControlType{
+    StdButton
+}
 
 pub trait Control {
-    fn create(hwnd: HWND, label: &str, id: i32, point: Point, width: i32, height: i32) -> WControl {
+    
+    fn create(&self,ctrltype: ControlType, hwnd: HWND, label: &str, id: i32, point: Point, width: i32, height: i32) -> HWND {
         unsafe {
+            match ctrltype{
+                ControlType::StdButton=>{},
+                _=>{}
+            }
             let cwnd = create_control(
                 hwnd,
                 "button",
@@ -149,12 +163,18 @@ pub trait Control {
                 point,
                 width,
                 height,
-                WS_VISIBLE | WS_CHILD | BS_GROUPBOX,
+                WS_VISIBLE | WS_CHILD,// | BS_GROUPBOX
             );
 
-            WControl(cwnd, id)
+           cwnd
         }
     }
+    fn add_callback(&self, app: &mut WinAppBuilder,callback: fn(&Act)){
+        app.add_callback(self.id(),callback);
+    }
+    fn place(&self, win: HWND);
+    fn id(&self)->Id;
+    //fn new(app: &mut WinAppBuilder)->Self;
 }
 
 pub fn CreateEdit(hwnd: HWND, label: &str, id: i32, point: Point, width: i32, height: i32) -> HWND {
@@ -1455,7 +1475,7 @@ pub fn get_stock_object(stock_object: c_int) -> HGDIOBJ {
 }
 
 pub fn get_ico() {}
-
+#[derive(Clone)]
 pub struct Point {
    pub x: i32,
    pub y: i32,
@@ -1463,6 +1483,11 @@ pub struct Point {
 impl Point {
     pub fn new(x: i32, y: i32) -> Self {
         Point { x: x, y: y }
+    }
+}
+impl From<(i32,i32)> for Point{
+    fn from(t:(i32,i32))->Point{
+        Point::new(t.0, t.1)
     }
 }
 pub struct WControl(pub HWND, pub i32);

@@ -169,7 +169,7 @@ use callbacks::*;
 
 pub struct WinProc{
     
-    pub callbacks: BTreeMap<Id, cllbck>
+    pub callbacks: BTreeMap<Id, Cllbck>
 }
 /* impl ToOwned for WinProc{
     type Owned=WinProc;
@@ -186,7 +186,7 @@ impl WinProc{
            
         }
     }
-    pub fn add_callback(&mut self, id: Id, callback: cllbck)->Option<cllbck>{
+    pub fn add_callback(&mut self, id: Id, callback: Cllbck)->Option<Cllbck>{
         self.callbacks.insert(id, callback)
     }
     pub unsafe extern "system" fn wndproc(&mut self,h_wnd: HWND,
@@ -305,6 +305,11 @@ pub unsafe extern "system" fn window_proc(
     //IsDialogMessageW();
     if msg == WM_CREATE {
         if let Some(state) = &mut windowstate{
+
+            
+        /* for control in &state.controls{
+            control.place(h_wnd);
+        } */
             //this was a testing saftey measure that will be removed
             /* if state.get_proc().callbacks.contains_key(&666u32){
                 SendMessageW(h_wnd, WM_CLOSE, 0, 0);
