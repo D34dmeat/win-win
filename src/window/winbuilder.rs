@@ -98,7 +98,7 @@ impl WinAppBuilder{
     /// let helpme = helpmenu.add_menuitem(app,"Help me");
     /// helpmenu.add_separator(); 
     /// let about = helpmenu.add_menuitem(app,"About");
-    /// # app.add_callback(666u32, |v,_ac| {let x = v;});
+    /// # app.add_main_handler(|ac| {ac.close_window();});
     /// 
     /// WinApp::run(app);
     /// 
@@ -140,10 +140,17 @@ impl WinAppBuilder{
         );
         self.main_window.hwnd}
     }
-    pub fn add_callback(&self,id: Id, callback: fn(Id,&Act)){
+    pub fn add_callback(&self,id: Id, callback: fn(&Act)){
         unsafe{
             if let Some(state) = &mut windowstate{
                 state.wndproc.add_callback(id,Box::new(callback));
+        }
+    }
+    }
+    pub fn add_main_handler(&self, callback: fn(&Act)){
+        unsafe{
+            if let Some(state) = &mut windowstate{
+                state.wndproc.add_callback(0,Box::new(callback));
         }
     }
     }

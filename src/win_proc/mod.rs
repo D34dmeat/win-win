@@ -305,10 +305,11 @@ pub unsafe extern "system" fn window_proc(
     //IsDialogMessageW();
     if msg == WM_CREATE {
         if let Some(state) = &mut windowstate{
-            if state.get_proc().callbacks.contains_key(&666u32){
+            //this was a testing saftey measure that will be removed
+            /* if state.get_proc().callbacks.contains_key(&666u32){
                 SendMessageW(h_wnd, WM_CLOSE, 0, 0);
                 //winapi::um::winuser::PostQuitMessage(0);
-            }
+            } */
         }
         /*  */
     };
@@ -322,11 +323,14 @@ pub unsafe extern "system" fn window_proc(
             //SendMessageW(h_wnd, WM_CLOSE, 0, 0);
             winapi::um::winuser::PostQuitMessage(0);
         } */
-        if !state.get_proc().callbacks.is_empty(){
-            for (id, callback) in &mut state.get_proc().callbacks{
-                callback(id.clone(),&act);
-            }
+        if let Some(callback) = &mut state.get_proc().callbacks.get(&0){
+            callback(&act);
         }
+        /* if !state.get_proc().callbacks.is_empty(){
+            for (id, callback) in &mut state.get_proc().callbacks{
+                callback(&act);
+            }
+        } */
 
     }
     
@@ -345,14 +349,22 @@ pub unsafe extern "system" fn window_proc(
             None=>{h_wnd}
         }; */
         
-                
-
+                /* if !state.get_proc().callbacks.is_empty(){
+            for (id, callback) in &mut state.get_proc().callbacks{
+                callback(&act);
+            }
+        } */
+        if let Some(state) = &mut windowstate{
             match LOWORD(w_param as DWORD) {
-               // x if callbacks.contains_key(&(x as u32)) => { }
+                x if state.get_proc().callbacks.contains_key(&(x as u32)) => { 
+                    if let Some(callback) = &mut state.get_proc().callbacks.get(&(x as u32)){
+                        callback(&act);
+                    }
+                }
 
                 _ => {}
             }
-
+        }
             //winapi::um::winuser::PostMessageW(h_wnd, 200, w_param, l_param);
         }
     

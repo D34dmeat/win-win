@@ -2,12 +2,13 @@ use crate::win_proc::Act;
 use crate::id_store::Id;
 
 
-pub trait Callback<T> where T: FnMut()->bool{
+pub trait Callback<T> where T: Fn(&Act)->(){
     
-    fn run(&mut self)->bool;
+    fn run(&mut self);
 }
-
-pub type cllbck = Box<dyn Fn(Id,&Act)->()>;
+//pub type Callb = Fn(Id,&Act)->();
+//pub type cllbck = Box<dyn Callback<dyn Fn(&Act)>>;
+pub type cllbck = Box<dyn Fn(&Act)>;
 pub struct Respond{}
 /* impl<T> Callback<T= dyn FnMut> for Respond{
 
