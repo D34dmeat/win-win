@@ -79,7 +79,7 @@ impl WinAppBuilder{
     /// # Example
     /// ```
     /// 
-    /// use win_win::{WinApp, menu::*, WinBuilder};
+    /// use win_win::{WinApp, menu::*, WinBuilder,controls::Control};
     /// 
     /// let mut app = WinApp::init();
     /// let mut app = app
