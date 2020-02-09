@@ -1,3 +1,4 @@
+use crate::controls::Control;
 use winapi::um::winuser::PostMessageW;
 use std::rc::Rc;
 use crate::window::winbuilder::windowstate;
@@ -168,7 +169,7 @@ use callbacks::*;
 
 
 pub struct WinProc{
-    
+    pub controls: Vec<Box<dyn Control>>,
     pub callbacks: BTreeMap<Id, Cllbck>
 }
 /* impl ToOwned for WinProc{
@@ -183,11 +184,14 @@ impl WinProc{
     pub fn new()->Self{
         WinProc{
             callbacks: BTreeMap::new(),
-           
+            controls: Vec::new()
         }
     }
     pub fn add_callback(&mut self, id: Id, callback: Cllbck)->Option<Cllbck>{
         self.callbacks.insert(id, callback)
+    }
+    pub fn add_control(&mut self, cntrl:Box<dyn Control>){
+        self.controls.push(cntrl)
     }
     pub unsafe extern "system" fn wndproc(&mut self,h_wnd: HWND,
         msg: UINT,
@@ -307,8 +311,11 @@ pub unsafe extern "system" fn window_proc(
         if let Some(state) = &mut windowstate{
 
             
-        /* for control in &state.controls{
+        for control in &state.get_proc().controls{
             control.place(h_wnd);
+        }
+        /* for control in &self.main_window.controls{
+            control.place(self.main_window.hwnd);
         } */
             //this was a testing saftey measure that will be removed
             /* if state.get_proc().callbacks.contains_key(&666u32){

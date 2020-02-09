@@ -79,7 +79,7 @@ impl WinAppBuilder{
     /// # Example
     /// ```
     /// 
-    /// use win_win::{WinApp, menu::*, WinBuilder,controls::Control};
+    /// use win_win::{WinApp, menu::*, WinBuilder, controls::Control};
     /// 
     /// let mut app = WinApp::init();
     /// let mut app = app
@@ -119,8 +119,12 @@ impl WinAppBuilder{
     pub fn hwnd(&self)->HWND{
         self.main_window.hwnd
     }
-    pub fn add_control(&mut self,cntrl:Box<dyn Control>){
-        self.main_window.controls.push(cntrl)
+    pub fn add_control(&self,cntrl:Box<dyn Control>){
+        unsafe{
+            if let Some(state) = &mut windowstate{
+                state.wndproc.add_control(cntrl);
+        }//self.main_window.controls.push(cntrl)
+    }
     }
     pub fn finish(&mut self)->HWND{
         //let classname = self.main_window.class.register();
@@ -143,9 +147,9 @@ impl WinAppBuilder{
             0 as HINSTANCE,
             std::ptr::null_mut(),
         );
-        for control in &self.main_window.controls{
+        /* for control in &self.main_window.controls{
             control.place(self.main_window.hwnd);
-        }
+        } */
         self.main_window.hwnd}
     }
     pub fn add_callback(&self,id: Id, callback: fn(&Act)){
@@ -201,8 +205,8 @@ pub struct Window{
     height: i32,
     id_store: Cell<IdStore>,
     class: class::Wclass,
-    wnd_proc: WinProc,
-    controls: Vec<Box<dyn Control>>
+    //wnd_proc: WinProc,
+    //controls: Vec<Box<dyn Control>>
 /* unsafe extern "system" fn(
         *mut winapi::shared::windef::HWND__,
         u32,
@@ -225,8 +229,8 @@ impl Default for Window{
             pos : Point::new(0, 0),
             label: to_wstring("Win-Win Application"),
             class: class::build_wnd_class("Main_Application", window_proc),
-            wnd_proc: WinProc::new(),
-            controls: Vec::new(),
+            //wnd_proc: WinProc::new(),
+            //controls: Vec::new(),
         }
     }
     
@@ -238,6 +242,7 @@ impl WindowState{
     pub fn get_proc(&mut self)->&mut self::WinProc{
         &mut self.wndproc
     }
+    
 }
 pub static mut windowstate:Option<WindowState> = None;
 
