@@ -32,6 +32,7 @@ use winapi::shared::windef::HWND;
 
 
 pub use menu::Menu;
+use controls::Control;
 pub use window::window::WinApp;
 pub use window::winbuilder::WinBuilder;
 
