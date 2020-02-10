@@ -174,7 +174,7 @@ pub trait Control {
     }
     fn place(&self, win: HWND);
     fn id(&self)->Id;
-    //fn new(app: &mut WinAppBuilder)->Self;
+    //fn new(self, app: &mut WinAppBuilder)->Self;
 }
 
 pub fn CreateEdit(hwnd: HWND, label: &str, id: i32, point: Point, width: i32, height: i32) -> HWND {
