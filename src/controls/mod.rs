@@ -1,3 +1,4 @@
+use crate::window::winbuilder::Style;
 use crate::window::winbuilder::Window;
 use crate::win_proc::Act;
 use crate::id_store::Id;
@@ -144,26 +145,33 @@ mod buttons;
 pub use buttons::*;
 
 pub enum ControlType{
-    StdButton
+    StdControl(Ctrl),
+    CommonControl(Ctrl)
+}
+pub enum Ctrl{
+    Button,
+    Edit
 }
 
 pub trait Control {
     
     fn create(&self,ctrltype: ControlType, hwnd: HWND, label: &str, id: i32, point: Point, width: i32, height: i32) -> HWND {
         unsafe {
+            let mut style = Style::new(WS_VISIBLE | WS_CHILD);
+            let mut typestring = "button";
             match ctrltype{
-                ControlType::StdButton=>{},
-                _=>{}
-            }
+                ControlType::StdControl(v)=>{},
+                ControlType::CommonControl(v)=>{},
+            };
             let cwnd = create_control(
                 hwnd,
-                "button",
+                typestring,
                 label,
                 id,
                 point,
                 width,
                 height,
-                WS_VISIBLE | WS_CHILD,// | BS_GROUPBOX
+                style.get(),//WS_VISIBLE | WS_CHILD,// | BS_GROUPBOX
             );
 
            cwnd

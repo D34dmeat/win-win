@@ -2,7 +2,7 @@ use winapi::shared::windef::HWND;
 use crate::window::winbuilder::Window;
 use crate::controls::Point;
 use crate::id_store::Id;
-use super::controls::{Control,ControlType};
+use super::controls::{Control,ControlType,Ctrl};
 use super::winbuilder::WinAppBuilder;
 #[derive(Clone)]
 pub struct Button{
@@ -13,7 +13,7 @@ impl Control for Button{
         self.id
     }
     fn place(&self, win: HWND){
-        self.create( ControlType::StdButton , win, &self.label, self.id as i32, Point::new(self.point.x,self.point.y), self.width, self.height);
+        self.create( ControlType::StdControl(Ctrl::Button) , win, &self.label, self.id as i32, Point::new(self.point.x,self.point.y), self.width, self.height);
     }
     /* fn new(app: &mut WinAppBuilder)->Self{
         Button{id,label: label.to_string(), point, width, height}

@@ -184,13 +184,16 @@ trait WindowTrait{
     }
     
 }
-struct Style(DWORD);
+pub struct Style(DWORD);
 impl Style{
-    fn new(value: DWORD)->Self{
+    pub fn new(value: DWORD)->Self{
         Style(value)
     }
-    fn add(&mut self, value: DWORD){
+    pub fn add(&mut self, value: DWORD){
         self.0 |= value;
+    }
+    pub fn get(self)->DWORD{
+        self.0
     }
 }
 impl WindowTrait for Window{}
