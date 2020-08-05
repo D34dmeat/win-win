@@ -349,7 +349,7 @@ pub unsafe extern "system" fn window_proc(
             //SendMessageW(h_wnd, WM_CLOSE, 0, 0);
             winapi::um::winuser::PostQuitMessage(0);
         } */
-        if let Some(callback) = &mut state.get_proc().callbacks.get(&0){
+        if let Some(callback) = state.get_proc().callbacks.get(&0){
             callback(&act);
         }
         /* if !state.get_proc().callbacks.is_empty(){

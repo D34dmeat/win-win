@@ -152,7 +152,7 @@ impl WinAppBuilder{
         } */
         self.main_window.hwnd}
     }
-    pub fn add_callback(&self,id: Id, callback: fn(&Act)){
+    pub fn add_callback(&self,id: Id, callback:  fn(&Act)) {//
         unsafe{
             if let Some(state) = &mut windowstate{
                 state.wndproc.add_callback(id,Box::new(callback));
