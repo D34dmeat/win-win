@@ -186,3 +186,54 @@ pub(crate) unsafe fn get_file_dialog_path(
 
     Ok(filename)
 }
+pub fn file_dialog(hwnd: HWND, title:&str, filename: Option<&str>,filter:Option<Vec<Filter>>, dialog_type: FileDialogType)->String{
+    unsafe{
+    let file = get_file_dialog_path(
+        hwnd,
+        dialog_type,
+        FileDialogOptions::default(),
+        title,
+        filename,
+        filter,
+        Some(0),
+        Some("*.*"),
+    );
+    
+    
+    if file.is_ok() {
+        file.unwrap().to_string_lossy().to_string()
+    }else{
+        "".to_string()
+    }
+    }
+    
+    }
+
+    pub fn open_file_dialog(hwnd: HWND, title:&str, filename: Option<&str>,filter:Option<Vec<Filter>>)->Result<OsString, &'static str>{
+        unsafe{
+        get_file_dialog_path(
+            hwnd,
+            FileDialogType::Open,
+            FileDialogOptions::default(),
+            title,
+            filename,
+            filter,
+            Some(0),
+            Some("*.*"),
+        )
+        }
+        }
+        pub fn save_file_dialog(hwnd: HWND, title:&str, filename: Option<&str>,filter:Option<Vec<Filter>>)->Result<OsString, &'static str>{
+            unsafe{
+            get_file_dialog_path(
+                hwnd,
+                FileDialogType::Save,
+                FileDialogOptions::default(),
+                title,
+                filename,
+                filter,
+                Some(0),
+                Some("*.*"),
+            )
+            }
+            }

@@ -284,6 +284,20 @@ impl<'a> Act{
             PostMessageW(self.hwnd.get(),WM_CLOSE,0,0);
         }
     }
+//functions for accessing win_proc temporary
+pub fn get_hwnd(&self)->HWND{
+    self.hwnd.get()
+}
+pub fn get_msg(&self)->UINT{
+    self.msg.get()
+}
+pub fn get_wparam(&self)->WPARAM{
+    self.wparam.get()
+}
+pub fn get_lparam(&self)->LPARAM{
+    self.lparam.get()
+}
+
 }
 
 
