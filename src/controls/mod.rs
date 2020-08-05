@@ -143,6 +143,8 @@ static mut hPrevLev2Item: HTREEITEM = 0 as HTREEITEM;
 
 mod buttons;
 pub use buttons::*;
+pub mod listboxes;
+pub use listboxes::*;
 
 #[derive()]
 pub enum ControlType{
@@ -429,6 +431,21 @@ pub fn listbox(
 
     WControl(cwnd, id)
 }
+impl Listbox{
+    // adds items to the listbox
+    pub fn add_items(&self, app: &mut WinAppBuilder, items: &[&str]){
+        for item in items {
+            unsafe {
+                let index = winapi::um::winuser::SendDlgItemMessageW(
+                    app.hwnd(),
+                    self.id() as i32,
+                    LB_ADDSTRING,
+                    0,
+                    to_wstring(item).as_ptr() as LPARAM,
+                );
+            }
+    }
+}}
 
 pub fn groupbox(
     hwnd: HWND,

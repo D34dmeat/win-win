@@ -13,7 +13,7 @@ impl Control for Listbox{
         self.id
     }
     fn place(&self, win: HWND){
-        self.create( ControlType::StdControl(Ctrl::Listbox) , win, &self.label, self.id as i32, Point::new(self.point.x,self.point.y), self.width, self.height);
+       self.create( ControlType::StdControl(Ctrl::Listbox) , win, &self.label, self.id as i32, Point::new(self.point.x,self.point.y), self.width, self.height);
     }
     /* fn new(app: &mut WinAppBuilder)->Self{
         Button{id,label: label.to_string(), point, width, height}
@@ -27,11 +27,13 @@ impl Listbox{
         //let vc = Button::create(self.hwnd(), label, id as i32, point, width, height);
         bt
     }
+    
 }
 impl WinAppBuilder{
     pub fn add_listbox(&mut self,label: &str,point: Point, width: i32, height: i32)->Listbox{
         let id = self.new_id();
         let bt = Listbox{id,label: label.to_string(), point, width, height};
+        //bt.add_items(self, &["blue"]);
         self.add_control(Box::new(bt.clone()));
         //let vc = Button::create(self.hwnd(), label, id as i32, point, width, height);
         bt

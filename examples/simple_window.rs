@@ -1,6 +1,6 @@
 extern crate win_win;
 
-use win_win::{WinApp, controls::Button, controls::Control};
+use win_win::{WinApp, controls::{Button,Listbox}, controls::Control};
 
 fn main(){
 use win_win::WinBuilder;
@@ -24,8 +24,14 @@ let exit = filemenu.add_menuitem(app, "Exit");
 app.add_main_handler(|ac| {ac.close_window();});
 
 let bbutton = app.add_button("quit",(60,40).into(),60,40);
+let lbox = app.add_listbox("list",(120,40).into(),60,150);
+lbox.add_items(&mut app,&["hello","bello"]);
 
 exit.add_callback(&mut app, |ac| {ac.close_window();});
+open.add_callback(&mut app, |ac| {
+  let path =  win_win::open_file_dialog(ac.get_hwnd(),"Open file",None,None);
+
+});
 bbutton.add_callback(&mut app, |ac| {ac.close_window();});
 //app.add_callback(exit.get_id(), |ac| {ac.close_window();});
 
