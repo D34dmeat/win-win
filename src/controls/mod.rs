@@ -433,11 +433,11 @@ pub fn listbox(
 }
 impl Listbox{
     // adds items to the listbox
-    pub fn add_items(&self, app: &mut WinAppBuilder, items: &[&str]){
+    pub fn add_items(&self, win: HWND, items: &[&str]){
         for item in items {
             unsafe {
                 let index = winapi::um::winuser::SendDlgItemMessageW(
-                    app.hwnd(),
+                    win,
                     self.id() as i32,
                     LB_ADDSTRING,
                     0,
