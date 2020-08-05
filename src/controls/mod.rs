@@ -144,13 +144,16 @@ static mut hPrevLev2Item: HTREEITEM = 0 as HTREEITEM;
 mod buttons;
 pub use buttons::*;
 
+#[derive()]
 pub enum ControlType{
     StdControl(Ctrl),
     CommonControl(Ctrl)
 }
+#[derive(PartialEq)]
 pub enum Ctrl{
     Button,
-    Edit
+    Edit,
+    Listbox
 }
 
 pub trait Control {
@@ -160,7 +163,18 @@ pub trait Control {
             let mut style = Style::new(WS_VISIBLE | WS_CHILD);
             let mut typestring = "button";
             match ctrltype{
-                ControlType::StdControl(v)=>{},
+                ControlType::StdControl(v) if v == Ctrl::Edit=>{typestring = "edit";
+                                                                       style.add(WS_VSCROLL
+                                                                        | WS_HSCROLL
+                                                                        | ES_MULTILINE
+                                                                        | ES_AUTOVSCROLL
+                                                                        | ES_AUTOHSCROLL); 
+                                                                        },
+                ControlType::StdControl(v) if v == Ctrl::Listbox=>{typestring = "listbox";
+                                                                        style.add(LBS_SORT | LBS_MULTIPLESEL | LBS_NOTIFY | WS_VSCROLL);                  
+                                                                            },
+                ControlType::StdControl(v) =>{},//button
+                
                 ControlType::CommonControl(v)=>{},
             };
             let cwnd = create_control(
