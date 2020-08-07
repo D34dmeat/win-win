@@ -24,8 +24,8 @@ let exit = filemenu.add_menuitem(app, "Exit");
 app.add_main_handler(|ac| {ac.close_window();});
 
 let bbutton = app.add_button("quit",(60,40).into(),60,40);
-let lbox = app.add_listbox("list",(120,40).into(),60,150);
-lbox.add_items(app.hwnd(),&["hello","bello"]);
+let lbox = app.add_listbox("list",(120,40).into(),60,150,&["hello","bello"]);
+
 
 exit.add_callback(&mut app, |ac| {ac.close_window();});
 open.add_callback(&mut app, |ac| {
