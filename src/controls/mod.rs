@@ -444,8 +444,23 @@ impl Listbox{
                     to_wstring(item).as_ptr() as LPARAM,
                 );
             }
+        }
     }
-}}
+    pub fn update_items(&self, win: HWND){
+        for item in &self.items {
+            unsafe {
+                let index = winapi::um::winuser::SendDlgItemMessageW(
+                    win,
+                    self.id() as i32,
+                    LB_ADDSTRING,
+                    0,
+                    to_wstring(item.as_str()).as_ptr() as LPARAM,
+                );
+            }
+        }
+    }
+
+}
 
 pub fn groupbox(
     hwnd: HWND,

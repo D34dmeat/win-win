@@ -6,7 +6,7 @@ use super::controls::{Control,ControlType,Ctrl};
 use super::winbuilder::WinAppBuilder;
 #[derive(Clone)]
 pub struct Listbox{
-id : Id,label: String,point: Point, width: i32, height: i32
+id : Id,label: String,point: Point, width: i32, height: i32, pub items: Vec<String>
 }
 impl Control for Listbox{
     fn id(&self)->Id{
@@ -14,6 +14,7 @@ impl Control for Listbox{
     }
     fn place(&self, win: HWND){
        self.create( ControlType::StdControl(Ctrl::Listbox) , win, &self.label, self.id as i32, Point::new(self.point.x,self.point.y), self.width, self.height);
+        self.update_items(win);
     }
     
     /* fn new(app: &mut WinAppBuilder)->Self{
@@ -21,9 +22,9 @@ impl Control for Listbox{
     } */
 }
 impl Listbox{
-    pub fn new(app: &mut WinAppBuilder, label: &str, point: Point, width: i32, height: i32)->Self{
+    pub fn new(app: &mut WinAppBuilder, label: &str, point: Point, width: i32, height: i32, items: &[&str])->Self{
         let id = app.new_id();
-        let bt = Listbox{id,label: label.to_string(), point, width, height};
+        let bt = Listbox{id,label: label.to_string(), point, width, height, items: items.iter().map(|i|i.to_string()).collect()};
         app.add_control(Box::new(bt.clone()));
         //let vc = Button::create(self.hwnd(), label, id as i32, point, width, height);
         bt
@@ -31,9 +32,9 @@ impl Listbox{
     
 }
 impl WinAppBuilder{
-    pub fn add_listbox(&mut self,label: &str,point: Point, width: i32, height: i32)->Listbox{
+    pub fn add_listbox(&mut self,label: &str,point: Point, width: i32, height: i32, items: &[&str])->Listbox{
         let id = self.new_id();
-        let bt = Listbox{id,label: label.to_string(), point, width, height};
+        let bt = Listbox{id,label: label.to_string(), point, width, height, items: items.iter().map(|i|i.to_string()).collect()};
         //bt.add_items(self.hwnd(), &["blue"]);
         self.add_control(Box::new(bt.clone()));
         //let vc = Button::create(self.hwnd(), label, id as i32, point, width, height);
