@@ -22,6 +22,7 @@ let exit = filemenu.add_menuitem(app, "Exit");
 
 //this is just a callback to close the window while testing, remove this for a functioning example
 app.add_main_handler(|ac| {ac.close_window();});
+
 let hbutton = Button::new(app, "hello button", (40,90).into(),70,20);
 let bbutton = app.add_button("quit",(40,40).into(),60,20);
 
