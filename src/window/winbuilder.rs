@@ -128,7 +128,7 @@ impl WinAppBuilder{
     }
 
     ///use external windows process, if not used a default proc will be used
-    /// ``` rust
+    /// ``` rust, ignore
     ///     pub unsafe extern "system" fn wndproc(&mut self,h_wnd: HWND,
     ///         msg: UINT,
     ///         w_param: WPARAM,
