@@ -22,9 +22,9 @@
 
 
 
-extern crate winapi;
+pub extern crate winapi;
 pub mod menu;
-mod window;
+pub mod window;
 pub mod controls;
 pub mod win_proc;
 pub mod id_store;
