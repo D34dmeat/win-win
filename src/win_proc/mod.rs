@@ -167,6 +167,7 @@ static mut cur_contexth: HWND= 0 as HWND;
 pub mod callbacks;
 use callbacks::*;
 
+pub mod ext_proc;
 
 pub struct WinProc{
     pub controls: Vec<Box<dyn Control>>,
