@@ -1,3 +1,8 @@
+use winapi::um::winuser::ClientToScreen;
+use winapi::shared::windef::RECT;
+use winapi::um::winuser::TPM_RIGHTBUTTON;
+use winapi::um::winuser::ScreenToClient;
+use winapi::um::winuser::GetCursorPos;
 use crate::win_proc::Act;
 use crate::controls::Control;
 use winapi::um::winuser::DestroyMenu;
@@ -29,6 +34,9 @@ use winapi::um::winuser::{
 pub struct Menu{
     data: MenuData
 }
+pub struct PopupMenu{
+    data: MenuData
+}
 pub struct MenuItem{
     id: Id
 }
@@ -40,6 +48,8 @@ impl Control for MenuItem{
         //self.create(win, &self.label, self.id as i32, self.point, self.width, self.height);
     }
 }
+
+
 impl Menu{
     pub fn new()->Self{
         Menu{
@@ -48,6 +58,13 @@ impl Menu{
         
     }
     fn dropdown_menu()->Self{
+        Menu{
+            data:unsafe{MenuData(winapi::um::winuser::CreatePopupMenu())}
+        }
+        
+    }
+
+    pub fn popup_menu()->Self{
         Menu{
             data:unsafe{MenuData(winapi::um::winuser::CreatePopupMenu())}
         }
@@ -113,6 +130,101 @@ impl Menu{
             }
     }
 }
+
+
+impl PopupMenu{
+    pub fn new()->Self{
+        PopupMenu{
+            data:unsafe{MenuData(winapi::um::winuser::CreatePopupMenu())}
+        }
+        
+    }
+
+    pub(crate) fn data(&self)->HMENU{
+        self.data.0
+    }
+
+    pub fn add_menuitem(&self, id: u32, title:&str)->MenuItem{//Id
+        
+        unsafe{AppendMenuW(self.data(), MF_STRING, id as usize, to_wstring(title).as_ptr());}
+        MenuItem{id:id}
+    }
+
+    pub fn add_checkmenuitem(&self, id: u32, title:&str, checked: bool)->MenuItem{
+        
+        unsafe{AppendMenuW(self.data(), MF_STRING, id as usize, to_wstring(title).as_ptr());
+            if checked {
+                CheckMenuItem(self.data(), id, MF_CHECKED);
+            } else {
+                CheckMenuItem(self.data(), id, MF_UNCHECKED);
+            }
+        }
+        MenuItem{id:id}
+    }
+
+    pub fn add_separator(&self){
+        unsafe{AppendMenuW(self.data(), MF_SEPARATOR, 0 as usize, 0 as LPCWSTR);}
+    }
+
+    pub fn add_dropdown(&mut self, title: &str)->Menu{
+       let menu = Menu::dropdown_menu();
+        unsafe{AppendMenuW(
+            self.data(),
+            MF_POPUP,
+            menu.data() as usize,
+            to_wstring(title).as_ptr(),
+        );}
+       menu
+    }
+
+    pub fn set_menuitem_checkstate(&self, item: &MenuItem, checked: bool){
+        unsafe{if checked {
+            CheckMenuItem(self.data(), item.id, MF_CHECKED);
+        } else {
+            CheckMenuItem(self.data(), item.id, MF_UNCHECKED);
+        }}
+    }
+
+    pub fn get_menuitem_checkstate(&self, item: &MenuItem)->bool{
+        unsafe{
+            let mstate = GetMenuState(self.data(), item.id, MF_BYCOMMAND);
+                if mstate == MF_CHECKED{true}else{false}
+            }
+    }
+
+    pub fn enable_menuitem(&self, item: &MenuItem){
+        unsafe{
+            EnableMenuItem(self.data(), item.id, MF_BYCOMMAND | MF_ENABLED);
+            }
+    }
+    pub fn disable_menuitem(&self, item: &MenuItem){
+        unsafe{
+            EnableMenuItem(self.data(), item.id, MF_BYCOMMAND | MF_DISABLED);
+            }
+    }
+
+    pub fn show(&self, window: HWND){
+        unsafe{
+            let mut point = POINT{x: 0, y: 0};
+            
+            GetCursorPos(&mut point);
+            ScreenToClient(window, &mut point);
+            //
+            ClientToScreen(window, &mut point);
+            let mut rect = RECT {
+                left: 0,
+                top: 0,
+                right: 0,
+                bottom: 0,
+            };
+            GetClientRect(window, &mut rect);
+            TrackPopupMenu(self.data(), TPM_RIGHTBUTTON, point.x, point.y, 0, window, 0 as *const RECT);
+            DestroyMenu(self.data());
+
+    }
+    }
+}
+
 struct MenuData(HMENU);
 
  

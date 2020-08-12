@@ -33,6 +33,7 @@ use winapi::shared::windef::HWND;
 //pub mod win_proc;
 
 pub use menu::Menu;
+pub use menu::PopupMenu;
 use controls::Control;
 pub use window::filedialog::{file_dialog, open_file_dialog, save_file_dialog,Filter};
 pub use window::window::WinApp;

@@ -4,6 +4,8 @@ use win_win::{WinApp, controls::Button, controls::Control};
 use win_win::win_proc::ext_proc::*;
 
 
+/// Example using menu, implementing a custom process, and contextmenu/popupmenu.
+
 fn main(){
 use win_win::WinBuilder;
 let mut app = WinApp::init();
@@ -64,7 +66,19 @@ unsafe extern "system" fn wndproc(h_wnd: HWND,
              };
 
              if msg == WM_SIZE {
-               MessageBox(h_wnd,"mowe on","this one",MB_OK);
+               
+             };
+
+             if msg == WM_RBUTTONDOWN {
+                let m = win_win::PopupMenu::new();
+                m.add_menuitem(56, "title");
+                m.show(h_wnd);
+               
+
+             };
+
+             if msg == WM_LBUTTONDOWN {
+                MessageBox(h_wnd,"mowe on","this one",MB_OK);
              };
          
              if msg == WM_QUIT {
