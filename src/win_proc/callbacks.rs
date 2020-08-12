@@ -8,7 +8,8 @@ pub trait Callback<T> where T: Fn(&Act)->(){
 }
 //pub type Callb = Fn(Id,&Act)->();
 //pub type cllbck = Box<dyn Callback<dyn Fn(&Act)>>;
-pub type Cllbck = Box<dyn Fn(&Act)->()>;
+//pub type Cllbck = Box<dyn Fn(&Act)->()>;
+pub type Cllbck = Box<dyn Fn(&Act)>;
 pub struct Respond{}
 /* impl<T> Callback<T= dyn FnMut> for Respond{
 

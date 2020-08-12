@@ -271,7 +271,7 @@ pub struct Act{
     lparam: Cell<LPARAM>,
 }
 impl<'a> Act{
-    fn new(hwnd: HWND, msg: UINT, wparam: WPARAM, lparam: LPARAM)->Self{
+    pub fn new(hwnd: HWND, msg: UINT, wparam: WPARAM, lparam: LPARAM)->Self{
             Act{
                 hwnd:Cell::new(hwnd),
                 msg:Cell::new(msg),
