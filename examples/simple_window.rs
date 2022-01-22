@@ -22,7 +22,7 @@ let exit = filemenu.add_menuitem(app, "Exit");
 
 //this is just a callback to close the window while testing, remove this for a functioning example
 app.add_main_handler(|ac| {ac.close_window();});
-let bbutton = app.add_button("quit",(60,40).into(),60,40);
+let bbutton = app.add_button("quit",(40,40).into(),60,20);
 
 exit.add_callback(&mut app, |ac| {ac.close_window();});
 bbutton.add_callback(&mut app, |ac| {ac.close_window();});
