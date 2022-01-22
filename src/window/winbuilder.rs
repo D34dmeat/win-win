@@ -126,6 +126,45 @@ impl WinAppBuilder{
         }//self.main_window.controls.push(cntrl)
     }
     }
+
+    ///use external windows process, if not used a default proc will be used
+    /// ``` rust, ignore
+    ///     pub unsafe extern "system" fn wndproc(&mut self,h_wnd: HWND,
+    ///         msg: UINT,
+    ///         w_param: WPARAM,
+    ///         l_param: LPARAM,
+    ///     ) -> LRESULT {
+    ///      
+    ///     if msg == WM_DESTROY {
+    ///         winapi::um::winuser::PostQuitMessage(0);
+    ///     };
+    /// 
+    /// //IsDialogMessageW();
+    ///     if msg == WM_CREATE {
+    ///         /*  */
+    ///     };
+    ///     if msg == WM_SIZE {
+    ///        //SendDlgItemMessageW(h_wnd, 2004, PBM_STEPIT, 0,0);
+    ///     }
+    /// 
+    ///     if msg == WM_QUIT {
+    ///         DestroyWindow(h_wnd);
+    ///     };
+    ///     return DefWindowProcW(h_wnd, msg, w_param, l_param);
+    ///     }
+    /// ```
+    pub fn use_ext_proc(&mut self,proc:unsafe extern "system" fn(
+        *mut winapi::shared::windef::HWND__,
+        u32,
+        usize,
+        isize,
+    ) -> isize){
+        unsafe{
+            self.main_window.class.set_proc(proc);
+            
+    }
+    }
+    
     pub fn finish(&mut self)->HWND{
         //let classname = self.main_window.class.register();
         //self.main_window.class.set_proc(self.main_window.wnd_proc.wndproc);                 TODO fix this!!!!!!
@@ -152,7 +191,7 @@ impl WinAppBuilder{
         } */
         self.main_window.hwnd}
     }
-    pub fn add_callback(&self,id: Id, callback: fn(&Act)){
+    pub fn add_callback(&self,id: Id, callback:  fn(&Act)) {//
         unsafe{
             if let Some(state) = &mut windowstate{
                 state.wndproc.add_callback(id,Box::new(callback));
@@ -184,13 +223,16 @@ trait WindowTrait{
     }
     
 }
-struct Style(DWORD);
+pub struct Style(DWORD);
 impl Style{
-    fn new(value: DWORD)->Self{
+    pub fn new(value: DWORD)->Self{
         Style(value)
     }
-    fn add(&mut self, value: DWORD){
+    pub fn add(&mut self, value: DWORD){
         self.0 |= value;
+    }
+    pub fn get(self)->DWORD{
+        self.0
     }
 }
 impl WindowTrait for Window{}

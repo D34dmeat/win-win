@@ -284,6 +284,20 @@ impl<'a> Act{
             PostMessageW(self.hwnd.get(),WM_CLOSE,0,0);
         }
     }
+//functions for accessing win_proc temporary
+pub fn get_hwnd(&self)->HWND{
+    self.hwnd.get()
+}
+pub fn get_msg(&self)->UINT{
+    self.msg.get()
+}
+pub fn get_wparam(&self)->WPARAM{
+    self.wparam.get()
+}
+pub fn get_lparam(&self)->LPARAM{
+    self.lparam.get()
+}
+
 }
 
 
@@ -335,7 +349,7 @@ pub unsafe extern "system" fn window_proc(
             //SendMessageW(h_wnd, WM_CLOSE, 0, 0);
             winapi::um::winuser::PostQuitMessage(0);
         } */
-        if let Some(callback) = &mut state.get_proc().callbacks.get(&0){
+        if let Some(callback) = state.get_proc().callbacks.get(&0){
             callback(&act);
         }
         /* if !state.get_proc().callbacks.is_empty(){

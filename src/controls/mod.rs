@@ -1,3 +1,4 @@
+use crate::window::winbuilder::Style;
 use crate::window::winbuilder::Window;
 use crate::win_proc::Act;
 use crate::id_store::Id;
@@ -142,28 +143,51 @@ static mut hPrevLev2Item: HTREEITEM = 0 as HTREEITEM;
 
 mod buttons;
 pub use buttons::*;
+pub mod listboxes;
+pub use listboxes::*;
 
+#[derive()]
 pub enum ControlType{
-    StdButton
+    StdControl(Ctrl),
+    CommonControl(Ctrl)
+}
+#[derive(PartialEq)]
+pub enum Ctrl{
+    Button,
+    Edit,
+    Listbox
 }
 
 pub trait Control {
     
     fn create(&self,ctrltype: ControlType, hwnd: HWND, label: &str, id: i32, point: Point, width: i32, height: i32) -> HWND {
         unsafe {
+            let mut style = Style::new(WS_VISIBLE | WS_CHILD);
+            let mut typestring = "button";
             match ctrltype{
-                ControlType::StdButton=>{},
-                _=>{}
-            }
+                ControlType::StdControl(v) if v == Ctrl::Edit=>{typestring = "edit";
+                                                                       style.add(WS_VSCROLL
+                                                                        | WS_HSCROLL
+                                                                        | ES_MULTILINE
+                                                                        | ES_AUTOVSCROLL
+                                                                        | ES_AUTOHSCROLL); 
+                                                                        },
+                ControlType::StdControl(v) if v == Ctrl::Listbox=>{typestring = "listbox";
+                                                                        style.add(LBS_SORT | LBS_MULTIPLESEL | LBS_NOTIFY | WS_VSCROLL);                  
+                                                                            },
+                ControlType::StdControl(v) =>{},//button
+                
+                ControlType::CommonControl(v)=>{},
+            };
             let cwnd = create_control(
                 hwnd,
-                "button",
+                typestring,
                 label,
                 id,
                 point,
                 width,
                 height,
-                WS_VISIBLE | WS_CHILD,// | BS_GROUPBOX
+                style.get(),//WS_VISIBLE | WS_CHILD,// | BS_GROUPBOX
             );
 
            cwnd
@@ -174,7 +198,7 @@ pub trait Control {
     }
     fn place(&self, win: HWND);
     fn id(&self)->Id;
-    //fn new(app: &mut WinAppBuilder)->Self;
+    //fn new(self, app: &mut WinAppBuilder)->Self;
 }
 
 pub fn CreateEdit(hwnd: HWND, label: &str, id: i32, point: Point, width: i32, height: i32) -> HWND {
@@ -406,6 +430,36 @@ pub fn listbox(
     }
 
     WControl(cwnd, id)
+}
+impl Listbox{
+    // adds items to the listbox
+    pub fn add_items(&self, win: HWND, items: &[&str]){
+        for item in items {
+            unsafe {
+                let index = winapi::um::winuser::SendDlgItemMessageW(
+                    win,
+                    self.id() as i32,
+                    LB_ADDSTRING,
+                    0,
+                    to_wstring(item).as_ptr() as LPARAM,
+                );
+            }
+        }
+    }
+    pub fn update_items(&self, win: HWND){
+        for item in &self.items {
+            unsafe {
+                let index = winapi::um::winuser::SendDlgItemMessageW(
+                    win,
+                    self.id() as i32,
+                    LB_ADDSTRING,
+                    0,
+                    to_wstring(item.as_str()).as_ptr() as LPARAM,
+                );
+            }
+        }
+    }
+
 }
 
 pub fn groupbox(
